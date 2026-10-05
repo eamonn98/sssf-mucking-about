@@ -18,12 +18,12 @@ auditable source of record.
 | `--jobs` / `SSSF_JOBS_DIR` | `jobs` | directory of `*.yaml` / `*.yml` job definitions |
 | `--max-attempts` / `SSSF_MAX_ATTEMPTS` | `3` | attempts before a failed job escalates to `HUMAN_REQUIRED` |
 | `--poll-seconds` / `SSSF_POLL_SECONDS` | `2` | idle and phase poll interval |
-| `--once` | off | process at most one job, then exit (smoke tests) |
+| `--once` | off | drain the claimable queue, then exit (smoke tests) |
 
 ```bash
 just factory                                  # process jobs/ continuously
 SSSF_JOBS_DIR=examples/jobs just factory      # process the two examples
-just factory -- --jobs examples/jobs --once   # one job, then exit
+just factory -- --jobs examples/jobs --once   # drain the queue, then exit
 ```
 
 Ctrl-C or SIGTERM stops the worker cleanly: it stops claiming, signals the

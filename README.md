@@ -247,7 +247,7 @@ deployment integrations.
 ```bash
 just factory                                  # process jobs/ continuously (Ctrl-C stops)
 SSSF_JOBS_DIR=examples/jobs just factory      # process the two bundled examples
-just factory -- --jobs examples/jobs --once   # process one job, then exit
+just factory -- --jobs examples/jobs --once   # drain the queue, then exit
 
 just obs                                      # existing visualizer incl. the factory board
 ```
