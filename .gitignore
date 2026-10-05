@@ -5,3 +5,13 @@ adws/adw_data/sssf.db*
 .env
 __pycache__/
 *.pyc
+
+# architecture visualiser (backend/ + frontend/)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+backend/data/
+backend/.tmp/
+*.db
+*.db-shm
+*.db-wal

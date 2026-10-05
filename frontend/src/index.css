@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark, developer-tool palette. Kept as HSL triples so Tailwind's colour
+   utilities can compose with opacity. */
+@layer base {
+  :root {
+    --background: 222 20% 8%;
+    --foreground: 210 20% 92%;
+
+    --card: 222 18% 11%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 222 22% 10%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 199 89% 55%;
+    --primary-foreground: 222 47% 8%;
+
+    --secondary: 220 14% 18%;
+    --secondary-foreground: 210 20% 92%;
+
+    --muted: 220 14% 16%;
+    --muted-foreground: 215 14% 60%;
+
+    --accent: 220 14% 20%;
+    --accent-foreground: 210 20% 95%;
+
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 20%;
+    --input: 220 14% 22%;
+    --ring: 199 89% 55%;
+
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-border;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* ── React Flow theme overrides ─────────────────────────────────────────── */
+
+.react-flow {
+  --xy-background-color: hsl(var(--background));
+  --xy-edge-stroke-default: hsl(215 14% 45%);
+  --xy-edge-stroke-selected-default: hsl(var(--primary));
+  --xy-attribution-background-color: transparent;
+}
+
+.react-flow__attribution {
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: hsl(215 14% 40%);
+  border: 1.5px solid hsl(var(--background));
+}
+
+.react-flow__handle-connecting {
+  background: hsl(var(--primary));
+}
+
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:focus .react-flow__edge-path {
+  stroke: hsl(var(--primary));
+  stroke-width: 2.5;
+}
+
+.react-flow__node {
+  font-family: inherit;
+}
+
+.react-flow__controls {
+  box-shadow: none;
+}
+
+.react-flow__controls-button {
+  background: hsl(var(--card));
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  fill: currentColor;
+}
+
+.react-flow__controls-button:hover {
+  background: hsl(var(--accent));
+}
+
+.react-flow__minimap {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+}
+
+.react-flow__node-default,
+.react-flow__node-input,
+.react-flow__node-output {
+  border: none;
+  padding: 0;
+  background: transparent;
+  width: auto;
+}

@@ -87,3 +87,33 @@ procs ADW_ID:
 # boot the trace UI, http://localhost:4601 (api on :4600)
 obs:
     cd .claude/skills/sssf/apps/visualizer && bun install && (SSSF_DB={{justfile_directory()}}/{{db}} bun run server/index.ts &) && bunx vite
+
+# ── architecture visualiser (backend/ + frontend/) ──────────────────────────
+# The product app lives beside this tooling. Nothing above this line changed.
+
+# install everything the app needs: Go modules and frontend packages
+app-setup:
+    cd backend && go mod download
+    cd frontend && bun install
+
+# one command: Go API on :8080 and Vite on :5173 (Ctrl-C stops both)
+app-dev:
+    ./scripts/dev.sh
+
+# just the Go API on 127.0.0.1:8080
+app-backend:
+    cd backend && go run ./cmd/server
+
+# just the Vite dev server on :5173 (proxies /api to the Go server)
+app-frontend:
+    cd frontend && bun run dev
+
+# everything CI would run: backend tests, frontend tests, typecheck and build
+app-test:
+    cd backend && go test ./...
+    cd frontend && bun run test && bun run typecheck && bun run build
+
+# delete the local database; the seeded example comes back on next start
+app-reset:
+    rm -f backend/data/architecture.db backend/data/architecture.db-shm backend/data/architecture.db-wal
+    @echo "local architecture database removed"
