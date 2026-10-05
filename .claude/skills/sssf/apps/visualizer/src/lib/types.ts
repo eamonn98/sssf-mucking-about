@@ -23,4 +23,7 @@ export type {
   PhaseStatus,
   PhaseKind,
   EventType,
+  FactoryJob,
+  FactoryJobState,
+  JobsResponse,
 } from '@shared/types'

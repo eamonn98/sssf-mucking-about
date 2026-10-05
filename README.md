@@ -12,7 +12,9 @@ no tracing. It runs entirely on loopback.
 
 > This repository also contains unrelated SSSF agent tooling under `adws/` and
 > `.claude/`. The product lives in `backend/` and `frontend/` and the new
-> `just app-*` recipes; nothing else was touched.
+> `just app-*` recipes; nothing else was touched. The SSSF tooling includes a
+> local, single-worker **software factory** driven by YAML jobs — see
+> [Local software factory](#local-software-factory-sssf) at the end of this file.
 
 ---
 
@@ -224,3 +226,85 @@ unreachable-API and narrow-viewport overlay states.
 - Multi-select editing, undo/redo, and auto-layout as an explicit user action.
 - Import/export of the architecture as JSON or as an OpenAPI/Terraform source.
 - Flow branching (fan-out and fan-in) rather than a strictly linear path.
+
+---
+
+## Local software factory (SSSF)
+
+The `adws/` tooling runs a persistent, local-first, **single-worker software
+factory**. It reads YAML job definitions from a directory, records each job and
+attempt in the SSSF SQLite database, and executes every attempt through the
+existing `adws/adw_simple_sdlc.py` pipeline. It does not reimplement the SDLC
+phases — it wraps them in a durable job ledger with bounded retries, human
+escalation, graceful shutdown and restart recovery.
+
+This phase is deliberately local: filesystem is the only job source, there is
+exactly one worker, and there are no GitHub/Jira/Linear/cloud, PR, merge or
+deployment integrations.
+
+### Commands
+
+```bash
+just factory                                  # process jobs/ continuously (Ctrl-C stops)
+SSSF_JOBS_DIR=examples/jobs just factory      # process the two bundled examples
+just factory -- --jobs examples/jobs --once   # process one job, then exit
+
+just obs                                      # existing visualizer incl. the factory board
+```
+
+### Configuration
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `--jobs` / `SSSF_JOBS_DIR` | `jobs` | directory of `*.yaml` / `*.yml` job definitions |
+| `--config` / `SSSF_CONFIG` | `adws/adw_sssf_config/sssf.config.yaml` | SSSF config; `observability.db` selects the database |
+| `--max-attempts` / `SSSF_MAX_ATTEMPTS` | `3` | attempts before a failed job escalates to `HUMAN_REQUIRED` |
+| `--poll-seconds` / `SSSF_POLL_SECONDS` | `2` | idle and phase poll interval |
+
+The default database is `adws/adw_data/sssf.db` — the same file the tracer and
+visualizer use. The factory adds only two tables (`jobs`, `job_attempts`) and
+never creates a second database.
+
+### Job definition
+
+```yaml
+id: EXAMPLE-001
+title: Document the factory command
+description: Add a section to README.md describing the local factory.
+priority: low
+acceptance_criteria:
+  - id: AC1
+    description: README explains the just factory command.
+  - id: AC2
+    description: README identifies the default jobs directory and retry setting.
+```
+
+`id`, `title`, `description` and a non-empty `acceptance_criteria` list of
+unique `{id, description}` mappings are required. Definitions are validated
+strictly; a malformed file is reported and skipped rather than silently dropped.
+Job ids are stable — the first discovery creates the record, later edits to the
+file never rewrite history, and the definition files are kept on disk for audit.
+
+### Lifecycle
+
+Each job has explicit persisted states and one durable attempt per try, keyed by
+the SSSF run id (`current_adw_id`). A failed attempt with budget left returns to
+`REWORK` and is retried; exhausted attempts escalate to `HUMAN_REQUIRED` and are
+never re-claimed. `COMPLETED`, `FAILED` and `HUMAN_REQUIRED` are terminal.
+Ctrl-C/SIGTERM stops the worker cleanly and records the interruption; the next
+startup recovers in-flight jobs (bounded, idempotent). The visualizer's factory
+view shows these states and links each job to its run.
+
+### Tests
+
+```bash
+uv run python -m unittest discover -s adws/tests -t . -v
+```
+
+The factory suite is offline and deterministic (a fake subprocess replaces the
+SDLC). To run the real two-example end-to-end smoke — which needs agent
+credentials — set `SSSF_FACTORY_E2E=1` (and have `just` on `PATH`).
+
+See `.claude/skills/sssf/references/factory.md` for the full state/retry
+semantics, limitations, and the recommended path to add GitHub as a future
+`JobSource`.

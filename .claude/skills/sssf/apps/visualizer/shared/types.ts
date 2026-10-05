@@ -293,6 +293,53 @@ export type EnvelopesResponse = Envelope[];
 /** GET /api/sessions/:adw_id/gates */
 export type GatesResponse = GateResult[];
 
+/**
+ * factory job states, persisted in jobs.state by adws/adw_factory.py.
+ * QUEUED/REWORK are claimable; the middle group is in-flight; the last group
+ * is terminal (never re-claimed).
+ */
+export type FactoryJobState =
+  | "QUEUED"
+  | "CLAIMED"
+  | "PLANNING"
+  | "SCOUTING"
+  | "BUILDING"
+  | "TESTING"
+  | "REVIEWING"
+  | "DOCUMENTING"
+  | "COMPLETED"
+  | "REWORK"
+  | "FAILED"
+  | "HUMAN_REQUIRED";
+
+/**
+ * A row from the factory's jobs table. Read-only in the UI: the worker is the
+ * only writer. `acceptance_criteria_json` is a JSON string of `{id,
+ * description}` items, parsed at the point of display. `current_adw_id` links
+ * the job to its most recent SSSF run in the trace view.
+ */
+export interface FactoryJob {
+  id: string;
+  title: string;
+  description: string;
+  acceptance_criteria_json: string;
+  priority: string | null;
+  source: string | null;
+  source_identifier: string | null;
+  state: FactoryJobState;
+  previous_state: FactoryJobState | null;
+  attempt_count: number;
+  current_adw_id: string | null;
+  error: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+/** GET /api/jobs — the factory board, empty when the tables do not exist yet. */
+export type JobsResponse = FactoryJob[];
+
 /** GET /api/health */
 export interface HealthResponse {
   ok: boolean;

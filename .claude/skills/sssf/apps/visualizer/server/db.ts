@@ -20,6 +20,7 @@ import type {
   Envelope,
   Event,
   EventsPage,
+  FactoryJob,
   GateResult,
   Phase,
   Session,
@@ -129,16 +130,17 @@ export class SssfDb {
   }
 
   /** Factory rows are optional on older databases until `just factory` runs. */
-  jobs(): Record<string, unknown>[] {
+  jobs(): FactoryJob[] {
     const exists = this.db.query<{ name: string }, []>(
       "SELECT name FROM sqlite_master WHERE type='table' AND name='jobs'",
     ).get()
     if (!exists) return []
-    return this.db.query<Record<string, unknown>, []>(
+    return this.db.query<FactoryJob, []>(
       `SELECT id,title,description,acceptance_criteria_json,priority,source,source_identifier,
               state,previous_state,attempt_count,current_adw_id,error,created_at,updated_at,
-              started_at,completed_at FROM jobs ORDER BY CASE state WHEN 'BUILDING' THEN 0
-              WHEN 'REVIEWING' THEN 1 WHEN 'QUEUED' THEN 2 ELSE 3 END, priority, created_at DESC`,
+              started_at,completed_at FROM jobs ORDER BY CASE state WHEN 'HUMAN_REQUIRED' THEN 0
+              WHEN 'FAILED' THEN 1 WHEN 'BUILDING' THEN 2 WHEN 'REVIEWING' THEN 3
+              WHEN 'QUEUED' THEN 4 ELSE 5 END, priority, created_at DESC`,
     ).all()
   }
 
