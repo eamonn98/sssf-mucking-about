@@ -1,0 +1,9 @@
+id: EXAMPLE-002
+title: Clarify local job format
+description: Add a brief example of a filesystem job definition to the SSSF documentation.
+acceptance_criteria:
+  - id: AC1
+    description: Documentation shows id, title, description and structured acceptance criteria.
+  - id: AC2
+    description: Documentation states that completed job definitions remain available for audit.
+priority: low

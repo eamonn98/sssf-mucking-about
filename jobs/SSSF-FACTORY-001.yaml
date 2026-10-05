@@ -1,0 +1,38 @@
+id: SSSF-FACTORY-001
+title: Evolve SSSF into a persistent, job-driven software factory
+description: >
+  Inspect the existing Super Simple Software Factory repository and evolve it
+  incrementally from a one-shot SDLC runner into a persistent, local-first,
+  single-worker software factory. Preserve the existing just recipes, SSSF
+  visualizer, SQLite database, tracing and observability, and simple-sdlc
+  workflow. Add a canonical job model with structured acceptance criteria,
+  explicit persisted states and attempts, a filesystem JobSource, a worker
+  exposed as `just factory`, bounded retries and human escalation, and a job
+  view in the existing visualizer. Reuse the existing SDLC workflow rather
+  than duplicating its planner, scout, builder, tests, reviewer, or documenter.
+  Keep job definitions auditable and implement no GitHub, Jira, Linear, cloud,
+  parallel-worker, PR, merge, or deployment integrations in this phase.
+acceptance_criteria:
+  - id: AC1
+    description: Existing just recipes and the simple-sdlc workflow remain compatible.
+  - id: AC2
+    description: Jobs are read from local YAML files with structured acceptance criteria and validated definitions.
+  - id: AC3
+    description: Jobs, state transitions, attempts, SSSF run IDs, timestamps, and failure reasons persist in the existing SQLite database.
+  - id: AC4
+    description: "`just factory` runs a single worker that discovers, claims, and executes jobs through the existing SSSF SDLC pipeline."
+  - id: AC5
+    description: The worker supports bounded retries, HUMAN_REQUIRED escalation, restart recovery, and graceful SIGINT/SIGTERM shutdown.
+  - id: AC6
+    description: Completed jobs are not processed again, and job definition files remain available for audit.
+  - id: AC7
+    description: The existing SSSF visualizer displays factory job state and links jobs to their associated runs.
+  - id: AC8
+    description: Automated tests cover job parsing, invalid definitions, state transitions, claiming, retries, filesystem discovery, completion deduplication, workflow failure, shutdown, and persistence recovery.
+  - id: AC9
+    description: Two safe local example jobs are included and exercised end to end, and the full existing test suite passes.
+  - id: AC10
+    description: Document configuration, commands, limitations, and the recommended path for adding GitHub as a future JobSource.
+priority: high
+source: filesystem
+source_identifier: SSSF-FACTORY-001.yaml

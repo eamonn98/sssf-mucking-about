@@ -60,6 +60,10 @@ sdlc *ARGS:
 simple-sdlc *ARGS:
     uv run adws/adw_simple_sdlc.py --config {{config}} "$@"
 
+# process queued YAML jobs continuously; stop with Ctrl-C
+factory:
+    uv run adws/adw_factory.py --config {{config}}
+
 # ── watch it ────────────────────────────────────────────────────────────────
 # Reads never block a running workflow, the db is WAL. Poll as hard as you like.
 

@@ -1,0 +1,9 @@
+id: EXAMPLE-001
+title: Document the factory command
+description: Add a short section to README.md describing how to start the local software factory and where job files are stored.
+acceptance_criteria:
+  - id: AC1
+    description: README explains the just factory command.
+  - id: AC2
+    description: README identifies the default jobs directory and retry setting.
+priority: low

@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useRoute, hrefFor, phaseCrumb } from './lib/router'
 import SessionsList from './components/SessionsList.vue'
 import SessionTrace from './components/SessionTrace.vue'
+import FactoryBoard from './components/FactoryBoard.vue'
 
 const route = useRoute()
+const factoryView = ref(false)
+watch(route, () => { if (route.value.adwId) factoryView.value = false })
 </script>
 
 <template>
@@ -20,6 +24,7 @@ const route = useRoute()
         <span class="brand">Super Simple Software Factory</span>
         <span class="sep">›</span>
         <a :href="hrefFor()" :class="{ current: !route.adwId }">sessions</a>
+        <button class="nav-view" :class="{ current: factoryView }" @click="factoryView = !factoryView">factory</button>
         <template v-if="route.adwId">
           <span class="sep">›</span>
           <a :href="hrefFor(route.adwId)" :class="{ current: !route.phaseId }">{{
@@ -34,7 +39,8 @@ const route = useRoute()
       <span class="live-hint"><span class="live-dot" /> live</span>
     </header>
     <main>
-      <SessionsList v-if="!route.adwId" />
+      <FactoryBoard v-if="factoryView && !route.adwId" />
+      <SessionsList v-else-if="!route.adwId" />
       <SessionTrace v-else :key="route.adwId" :adw-id="route.adwId" :phase-id="route.phaseId" />
     </main>
   </div>
@@ -106,6 +112,9 @@ const route = useRoute()
 .crumbs a:hover {
   color: var(--text);
 }
+
+.nav-view { color: var(--dim); background: transparent; border: 0; padding: 0; font: inherit; cursor: pointer; }
+.nav-view:hover, .nav-view.current { color: var(--text); }
 
 .crumbs .current {
   color: var(--text);

@@ -128,6 +128,20 @@ export class SssfDb {
     this.db.close();
   }
 
+  /** Factory rows are optional on older databases until `just factory` runs. */
+  jobs(): Record<string, unknown>[] {
+    const exists = this.db.query<{ name: string }, []>(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='jobs'",
+    ).get()
+    if (!exists) return []
+    return this.db.query<Record<string, unknown>, []>(
+      `SELECT id,title,description,acceptance_criteria_json,priority,source,source_identifier,
+              state,previous_state,attempt_count,current_adw_id,error,created_at,updated_at,
+              started_at,completed_at FROM jobs ORDER BY CASE state WHEN 'BUILDING' THEN 0
+              WHEN 'REVIEWING' THEN 1 WHEN 'QUEUED' THEN 2 ELSE 3 END, priority, created_at DESC`,
+    ).all()
+  }
+
   /**
    * Archive or restore a session — the only write in this process.
    *

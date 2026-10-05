@@ -124,6 +124,7 @@ const server = Bun.serve({
     ),
 
     "/api/sessions": safely((req) => json(db.sessions(intQuery(req, "limit", 200)))),
+    "/api/jobs": safely(() => json(db.jobs())),
 
     "/api/sessions/:adw_id": safely((req) => {
       const detail = db.sessionDetail(param(req, "adw_id"));
