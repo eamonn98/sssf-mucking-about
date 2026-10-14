@@ -15,3 +15,36 @@ backend/.tmp/
 *.db
 *.db-shm
 *.db-wal
+
+# sssf visualizer app (.claude/skills/sssf/apps/visualizer)
+.claude/skills/sssf/apps/visualizer/node_modules/
+.claude/skills/sssf/apps/visualizer/dist/
+.claude/skills/sssf/apps/visualizer/.vite/
+
+# env files (keep the sample)
+.env.*
+!.env.sample
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# python tooling
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# frontend tooling
+*.tsbuildinfo
+coverage/
+
+# go build output
+backend/bin/
+
+# logs
+*.log
+
+# claude code local-only
+.claude/settings.local.json
+CLAUDE.local.md
